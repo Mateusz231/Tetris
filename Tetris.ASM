@@ -88,9 +88,9 @@ jmp main_loop
 
 
 read_input:
-    mov ah, 01h        ; Funkcja przerwania 16h do sprawdzenia czy są dostępne dane w klawiaturze
+    mov ah, 01h  
     int 16h
-    jz no_key_pressed  ; Jeśli brak danych w klawiaturze, przejdź do no_key_pressed
+    jz no_key_pressed 
 
 			
 	key:
@@ -117,7 +117,7 @@ ret
 
 
 esc_key_read:
-    mov ah, 4Ch        ; Zakończ program, jeśli to klawisz ESC
+    mov ah, 4Ch      
     int 21h
 	
 	ret 
@@ -697,34 +697,34 @@ ret
 
 
 get_seed:
-     ;Ustawienie ziarna generatora liczb pseudolosowych na podstawie aktualnego czasu systemowego
-  mov ah, 2Ch    ; Funkcja INT 21h - Pobranie czasu systemowego
- int 21h        ; Wywołanie przerwania
- push dx        ; Zachowanie wartości rejestru DL na stosie
- xor dx, dx     ; Wyczyszczenie rejestru DX
- mov cx, 1000h   ; Wartość dla zmiany zakresu ziarna
- div cx         ; Dzielenie przez wartość zmieniającą zakres ziarna
- pop dx         ; Przywrócenie wartości rejestru DL z poprzedniego stanu
- mov random_seed, dx  ; Zapisanie zmodyfikowanego ziarna w random_seed
+
+  mov ah, 2Ch    
+ int 21h        
+ push dx       
+ xor dx, dx     
+ mov cx, 1000h   
+ div cx         
+ pop dx         
+ mov random_seed, dx  
  ret
 
 
 modify_seed:
-	mov ax, random_seed     ; Wczytanie aktualnej wartości ziarna
-    mul a_par         ; Mnożenie przez parametr a
-    add ax, c_par    ; Dodanie parametru c
+	mov ax, random_seed    
+    mul a_par        
+    add ax, c_par    
     mov dx, 0
-    div m_par       ; Dzielenie przez moduł m
-    mov random_seed, dx     ; Zapisanie nowej wartości ziarna
+    div m_par      
+    mov random_seed, dx    
     ret
      
 
 
 generate_random_number:
-	 mov ax, random_seed  ; Wczytanie aktualnej wartości ziarna
-    xor dx, dx           ; Wyczyszczenie rejestru DX
-    mov cx, 5           ; Przechowuje górną granicę (79 + 1) dla X
-	div cx               ; Dzielenie przez górną granicę
+	 mov ax, random_seed  
+    xor dx, dx          
+    mov cx, 5          
+	div cx               
 	cmp dl,15
 	jge minus2
 	ret
@@ -977,6 +977,10 @@ ret
 
 transform_I_block_2:
 
+cmp can_transform_var,1
+je cannot_transform
+
+
 call remove_block
 
 mov ax,current_x_left_border
@@ -1102,19 +1106,29 @@ mov bx,old_y_upper_bound
 sub dx,ax
 sub cx,bx
 
-mov bx,old_y_upper_bound
-add bx,dx
-mov old_y_lower_bound,bx
 
-mov bx,old_x_left_border
+mov bx,current_x_left_border
 add bx,cx
 mov old_x_right_border,bx
 
 
+mov bx,current_x_right_border
+sub bx,old_x_right_border
 
-mov cx,current_x_right_border
-inc cx
-mov dx,old_y_upper_bound
+mov ax,current_y_lower_bound
+add ax,bx
+
+mov old_y_lower_bound,ax
+
+
+
+
+mov dx,current_y_lower_bound
+inc dx
+mov cx,current_x_left_border
+
+
+
 
 transform_2_loop:
 mov ah,0dh
@@ -1129,16 +1143,15 @@ jne cant_transform_2
 
 inc cx
 cmp cx,old_x_right_border
-jg increment_y_y_y
+jg increment_y_pos
 
 
 
 jmp transform_2_loop
 
 
-increment_y_y_y:
-mov cx,current_x_right_border
-inc cx
+increment_y_pos:
+mov cx,current_x_left_border
 inc dx
 cmp dx, old_y_lower_bound
 jg transform_2_end
@@ -1211,14 +1224,15 @@ ret
 
 
 
-up_arrow equ 48h       ; Kod strzałki w górę
-esc_key equ 1Bh        ; Kod klawisza ESC
-down_arrow equ 50h     ; Kod strzałki w dół
-left_arrow equ 4Bh     ; Kod strzałki w lewo
-right_arrow equ 4Dh    ; Kod strzałki w prawo
+up_arrow equ 48h      
+esc_key equ 1Bh       
+down_arrow equ 50h     
+left_arrow equ 4Bh    
+right_arrow equ 4Dh  
 
 
 
 
 program ends
 end start
+
