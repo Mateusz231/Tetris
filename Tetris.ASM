@@ -276,18 +276,16 @@ inc cx
 
 
 cmp cx,current_x_right_border
-je increment_y
+jg increment_y
 
 jmp draw_block_O 
 
 
 increment_y:
-mov cx,160
+mov cx,current_x_left_border
 inc dx
-cmp dx,20
+cmp dx,current_y_lower_bound
 je end_block_draw_O
-
-
 jmp draw_block_O
 
 end_block_draw_O:
@@ -325,7 +323,7 @@ mov dx,00h
 mov current_x_left_border,cx
 mov current_x_right_border,169
 mov current_y_upper_bound,dx
-mov current_y_lower_bound,39
+mov current_y_lower_bound,40
 
 
 
@@ -350,12 +348,10 @@ jmp draw_block_I
 
 increment_y_6:
 
-mov cx,160
+mov cx, current_x_left_border
 inc dx
 cmp dx,current_y_lower_bound
 je end_block_draw_I
-
-
 jmp draw_block_I
 
 end_block_draw_I:
@@ -607,7 +603,7 @@ gen_next_shape:
 call get_seed
 call modify_seed
 call generate_random_number
-call draw_block_start_I
+call draw_block_start_O
 
 ret
 
@@ -1176,20 +1172,6 @@ ret
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 remove_block:
 
 mov dx,current_y_upper_bound
@@ -1221,6 +1203,7 @@ remove_previous_end_4:
 mov cl,1
 mov rotate_state,cl
 ret
+
 
 
 
